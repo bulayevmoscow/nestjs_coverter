@@ -14,6 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { VideoConverterService } from './video-converter.service';
 
 const saveDir = path.join(__dirname, '/upload_folder');
 const saveFile = (data: any): string => {
@@ -32,6 +33,8 @@ const readFile = (id: any) => {
 
 @Controller('video-converter')
 export class VideoConverterController {
+  constructor(private videoConverterService: VideoConverterService) {}
+
   @Get(':id')
   getFileContent(@Param() params: { id: string }) {
     console.log(params.id);
@@ -82,5 +85,6 @@ export class VideoConverterController {
     file: Express.Multer.File,
   ) {
     console.log(file);
+    return this.videoConverterService.convert(file.path);
   }
 }
