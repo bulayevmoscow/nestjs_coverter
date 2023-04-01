@@ -11,34 +11,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import * as fs from 'fs';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VideoConverterService } from './video-converter.service';
-
-const saveDir = path.join(__dirname, '/upload_folder');
-const saveFile = (data: any): string => {
-  if (!fs.existsSync(saveDir)) {
-    fs.mkdirSync(saveDir);
-  }
-  const fileName = uuid();
-  fs.writeFileSync(path.join(saveDir, fileName), String(data));
-  return fileName;
-};
-
-const readFile = (id: any) => {
-  const buf = fs.readFileSync(path.join(saveDir, id));
-  return buf.toString('utf-8');
-};
-
+import { FsModuleModule } from '../fs-module/fs-module.module';
 @Controller('video-converter')
 export class VideoConverterController {
-  constructor(private videoConverterService: VideoConverterService) {}
+  constructor(
+    // private videoConverterService: VideoConverterService,
+    private fsModuleModule: FsModuleModule,
+  ) {}
 
   @Get(':id')
   getFileContent(@Param() params: { id: string }) {
     console.log(params.id);
-    return readFile(params.id);
+    // return readFile(params.id);
   }
   @Get()
   // TODO REMOVE
@@ -51,10 +37,10 @@ export class VideoConverterController {
   }
   @Post()
   async downloadFile(@Body() body: { id: string }) {
-    const fileName = saveFile(body.id);
+    // const fileName = saveFile(body.id);
     return {
       id: body.id,
-      fileName: fileName,
+      // fileName: fileName,
     };
   }
 
@@ -85,6 +71,6 @@ export class VideoConverterController {
     file: Express.Multer.File,
   ) {
     console.log(file);
-    return this.videoConverterService.convert(file.path);
+    // return this.videoConverterService.convert(file.path);
   }
 }
